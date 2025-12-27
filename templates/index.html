@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SimpleLang Compiler — Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>SimpleLang Compiler — Demo</h1>
+      <div class="editor">
+        <textarea id="source" placeholder="Enter SimpleLang code...">int x;
+x = 10 + 5;
+print(x);</textarea>
+        <button id="compile">Compile</button>
+      </div>
+
+      <div class="results">
+        <section>
+          <h2>Tokens</h2>
+          <pre id="tokens"></pre>
+        </section>
+        <section>
+          <h2>Symbol Table</h2>
+          <pre id="symbols"></pre>
+        </section>
+        <section>
+          <h2>AST</h2>
+          <pre id="ast"></pre>
+        </section>
+        <section>
+          <h2>Three-Address Code</h2>
+          <pre id="tac"></pre>
+        </section>
+        <section>
+          <h2>Optimized Code</h2>
+          <pre id="opt"></pre>
+        </section>
+        <section>
+          <h2>Errors</h2>
+          <pre id="errors"></pre>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('compile').addEventListener('click', async () => {
+        const btn = document.getElementById('compile');
+        const errorsEl = document.getElementById('errors');
+        btn.disabled = true;
+        btn.textContent = 'Compiling...';
+        errorsEl.textContent = '';
+
+        try {
+          const source = document.getElementById('source').value;
+          const res = await fetch('/compile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ source }),
+          });
+
+          if (!res.ok) {
+            const text = await res.text();
+            errorsEl.textContent = `Server error ${res.status}: ${text}`;
+            return;
+          }
+
+          const data = await res.json();
+
+          document.getElementById('tokens').textContent = JSON.stringify(data.tokens, null, 2);
+          document.getElementById('symbols').textContent = JSON.stringify(data.symbol_table, null, 2);
+          document.getElementById('ast').textContent = JSON.stringify(data.ast, null, 2);
+          document.getElementById('tac').textContent = JSON.stringify(data.three_address_code, null, 2);
+          document.getElementById('opt').textContent = JSON.stringify(data.optimized_code, null, 2);
+
+          const errors = { parse: data.parse_errors, semantic: data.semantic_errors };
+          errorsEl.textContent = JSON.stringify(errors, null, 2);
+        } catch (err) {
+          errorsEl.textContent = `Network or JS error: ${err}`;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Compile';
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+body { font-family: Arial, sans-serif; background: #f5f7fb; color: #222; }
+.container { max-width: 960px; margin: 32px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 14px rgba(20,20,40,0.06); }
+.editor { display:flex; gap: 12px; align-items:flex-start }
+textarea { width: 100%; height: 160px; font-family: monospace; padding: 12px; border-radius: 6px; border: 1px solid #ddd; }
+button { padding: 10px 16px; border-radius: 6px; background: #0b74de; color: #fff; border: none; cursor:pointer }
+.results { margin-top: 18px; display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px }
+.results section { background: #fafbff; padding: 12px; border-radius: 6px; border: 1px solid #eee }
+pre { white-space: pre-wrap; word-break: break-word; font-family: monospace; font-size: 13px; }
+@media (max-width:700px){ .results{ grid-template-columns: 1fr } }
